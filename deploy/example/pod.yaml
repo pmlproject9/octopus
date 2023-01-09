@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    project: test
+  name: tmp-shell
+  namespace: mnp-test
+spec:
+  containers:
+    - args:
+        - /bin/bash
+      image:  quay.io/submariner/nettest
+      name: tmp-shell
+      ports:
+        - containerPort: 80
