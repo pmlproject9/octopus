@@ -11,16 +11,16 @@ import (
 	"time"
 
 	octopusapi "github.com/pmlproject9/octopus/pkg/apis/octopus.io/v1alpha1"
-	octopusClient "github.com/pmlproject9/octopus/pkg/generated/clientset/versioned"
 	"k8s.io/client-go/kubernetes"
+	mcsv1a1Client "sigs.k8s.io/mcs-api/pkg/client/clientset/versioned"
 )
 
 type Controller struct {
-	ctx           context.Context
-	kubeClient    kubernetes.Interface
-	octopusClient octopusClient.Interface
-	syncPeriod    time.Duration
-	cluterID      string
+	ctx        context.Context
+	kubeClient kubernetes.Interface
+	mcsClient  mcsv1a1Client.Interface
+	syncPeriod time.Duration
+	cluterID   string
 
 	fullSyncChan chan struct{}
 	reFlushChan  chan struct{}
@@ -32,24 +32,25 @@ type Controller struct {
 	namespaceLister          cache.Indexer
 	podLister                cache.Indexer
 	multiNetworkPolicyLister cache.Indexer
-	serviceSyncLister        cache.Indexer
+	serviceImportLister      cache.Indexer
 	endpointLister           cache.Indexer
 }
 
 func NewMultiNetworkPolicyController(ctx context.Context,
 	syncPeriod time.Duration,
 	kubeclient kubernetes.Interface,
+	mcsClient mcsv1a1Client.Interface,
 	nsInformer cache.SharedIndexInformer,
 	podInformer cache.SharedIndexInformer,
 	mnpInformer cache.SharedIndexInformer,
-	serviceSyncInformer cache.SharedIndexInformer,
+	serviceImportInformer cache.SharedIndexInformer,
 	endpointsInformer cache.SharedIndexInformer,
 	clusterID string) *Controller {
 
 	nsLister := nsInformer.GetIndexer()
 	mnpLister := mnpInformer.GetIndexer()
 	podLister := podInformer.GetIndexer()
-	serviceSyncLister := serviceSyncInformer.GetIndexer()
+	serviceImportLister := serviceImportInformer.GetIndexer()
 	endpointsLister := endpointsInformer.GetIndexer()
 
 	iptablesRunner, err := iptables.New()
@@ -61,6 +62,7 @@ func NewMultiNetworkPolicyController(ctx context.Context,
 	c := &Controller{
 		ctx:        ctx,
 		kubeClient: kubeclient,
+		mcsClient:  mcsClient,
 		syncPeriod: syncPeriod,
 		cluterID:   clusterID,
 
@@ -73,20 +75,21 @@ func NewMultiNetworkPolicyController(ctx context.Context,
 		namespaceLister:          nsLister,
 		multiNetworkPolicyLister: mnpLister,
 		podLister:                podLister,
-		serviceSyncLister:        serviceSyncLister,
+		serviceImportLister:      serviceImportLister,
 		endpointLister:           endpointsLister,
 	}
 
 	mnpInformer.AddEventHandler(c.newMultiNetworkPolicyEventHandler())
 	nsInformer.AddEventHandler(c.newNamespaceEventHandler())
 	podInformer.AddEventHandler(c.newPodventHandler())
-	serviceSyncInformer.AddEventHandler(c.newServiceSyncvEventHandler())
+	serviceImportInformer.AddEventHandler(c.newServiceImportEventHandler())
 	endpointsInformer.AddEventHandler(c.newEndpointventHandler())
 
 	return c
 }
 
 func (ctr *Controller) Run(wg *sync.WaitGroup) {
+	defer wg.Done()
 	t := time.NewTicker(ctr.syncPeriod)
 
 	ctr.ensureDefaultIPtables()
@@ -96,7 +99,6 @@ func (ctr *Controller) Run(wg *sync.WaitGroup) {
 	go ctr.ReFlushServicesCidr(wg)
 
 	for {
-		klog.V(1).Info()
 		ctr.fullSync()
 		select {
 		case <-ctr.ctx.Done():

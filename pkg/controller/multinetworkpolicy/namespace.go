@@ -51,7 +51,7 @@ func (ctr *Controller) OnNamespeceDelete(obj interface{}) {
 			return
 		}
 	}
-	klog.V(4).Infof("", klog.KObj(mnp))
+	klog.V(4).Infof("deleting namespaceCreateRequest %q", klog.KObj(mnp))
 	ctr.SendFullSyncChan()
 
 }

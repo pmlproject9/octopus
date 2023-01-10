@@ -1,0 +1,13 @@
+# Default values for octopus-broker.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+---
+rbac:
+  create: true
+crd:
+  create: true
+serviceAccounts:
+  client:
+    create: true
+    name: ""
+

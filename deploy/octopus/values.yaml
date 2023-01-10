@@ -15,7 +15,8 @@ broker:
 replicaCount: 1
 
 image:
-  repository: "lcw2/octopus"
+  repositoryAgent: "lcw2/octopus-agent"
+  repositorySync: "lcw2/octopus-sync"
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: "latest"

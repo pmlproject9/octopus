@@ -1,4 +1,3 @@
-
 # Image URL to use all building/pushing image targets
 AGENTIMG ?= lcw2/octopus-agent:latest
 SYNCIMG ?= lcw2/octopus-sync:latest
@@ -32,10 +31,6 @@ update-codegen:  ## generetor clientset informer inderx code
 .PHONY: docker-build-agent
 docker-build-agent:
 	docker build --network host -f ./build/agent/Dockerfile -t ${AGENTIMG} .
-
-.PHONY: docker-build-sync
-docker-build-sync:
-	docker build --network host -f ./build/sync/Dockerfile -t ${SYNCIMG} .
 
 # find or download controller-gen
 # download controller-gen if necessary
