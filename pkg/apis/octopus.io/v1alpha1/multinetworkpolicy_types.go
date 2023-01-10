@@ -25,7 +25,7 @@ type MultiNetworkPolicy struct {
 type MultiNetworkPolicySpec struct {
 	PodSelector metav1.LabelSelector `json:"podSelector" protobuf:"bytes,1,opt, name=podSelector"`
 	// +optional
-	Egress Rule `json:"egress,omitempty" protobuf:"bytes,3,opt,name=egress"`
+	Filter Rule `json:"filter,omitempty" protobuf:"bytes,3,opt,name=filter"`
 }
 
 type Rule struct {

@@ -5,13 +5,11 @@ metadata:
   namespace: mnp-test
   labels:
     app: nginx
-    project: test
 spec:
   ports:
     - name: nginx
       port: 80
       targetPort: 80
-      nodePort: 30002
   selector:
     app: nginx
   type: ClusterIP

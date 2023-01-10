@@ -27,7 +27,7 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: octopus-agent
-    namespace: {{ .Release.Namespace }}
+    namespace: octopus
 ---
 apiVersion: {{ include "common.capabilities.rbac.apiVersion" . }}
 kind: ClusterRoleBinding
@@ -40,4 +40,4 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: octopus-sync
-    namespace: {{ .Release.Namespace }}
+    namespace: octopus

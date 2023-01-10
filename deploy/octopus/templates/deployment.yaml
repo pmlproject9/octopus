@@ -30,45 +30,6 @@ spec:
       securityContext: {}
       containers:
         - name: octopus-agent
-          command: ["octopus-agent --clusterID={{.Values.octopus.clusterID}} --iptables-sync-period={{.Values.octopus.iptablesSyncPeriod}}"]
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          livenessProbe:
-            httpGet:
-              path: /
-              port: http
-          readinessProbe:
-            httpGet:
-              path: /
-              port: http
-          resources: {}
-      {{- with .Values.nodeSelector }}
-      nodeSelector:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: octopus-sync
-  namespace: octopus
-  labels:
-    {{- include "octopus.labels" . | nindent 4 }}
-spec:
-  {{- if not .Values.autoscaling.enabled }}
-  replicas: {{ .Values.replicaCount }}
-  {{- end }}
-  selector:
-    matchLabels:
-      {{- include "octopus.selectorLabels" . | nindent 6 }}
-  template:
-    metadata:
-      labels:
-        {{- include "octopus.selectorLabels" . | nindent 8 }}
-    spec:
-      serviceAccountName: octopus-sync
-      containers:
-        - name: {{ .Chart.Name }}
           env:
             - name: BROKER_K8S_APISERVER
               value: {{.Values.broker.server}}
@@ -78,16 +39,42 @@ spec:
               value: {{.Values.broker.ca}}
             - name: BROKER_K8S_INSECURE
               value: "false"
-          command: ["service-syncer --clusterID={{.Values.octopus.clusterID}}"]
-          securityContext: {}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          args:
+            - "--clusterID={{.Values.octopus.clusterID}}"
+            - "--iptables-sync-period={{.Values.octopus.iptablesSyncPeriod}}"
+          image: "{{ .Values.image.repositoryAgent }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          livenessProbe:
-            httpGet:
-              path: /
-              port: http
-          readinessProbe:
-            httpGet:
-              path: /
-              port: http
-          resources:{}
+          securityContext:
+            allowPrivilegeEscalation: true
+            capabilities:
+              add:
+                - ALL
+            privileged: true
+            readOnlyRootFilesystem: false
+            runAsNonRoot: false
+          resources: {}
+          volumeMounts:
+            - mountPath: /run/xtables.lock
+              name: xtables-lock
+            - mountPath: /sys
+              name: host-sys
+            - mountPath:  /run/openvswitch/db.sock
+              name: host-run-openvswitch-db-sock
+      hostNetwork: true
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: xtables-lock
+          hostPath:
+            path:  /run/xtables.lock
+            type: ""
+        - name: host-sys
+          hostPath:
+            path: /sys
+            type: ""
+        - name: host-run-openvswitch-db-sock
+          hostPath:
+            path: /run/openvswitch/db.sock
+            type: ""

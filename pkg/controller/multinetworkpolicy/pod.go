@@ -56,6 +56,6 @@ func (ctr *Controller) OnPodDelete(obj interface{}) {
 			return
 		}
 	}
-	klog.V(4).Infof("", klog.KObj(pod))
+	klog.V(4).Infof("Deleting podUpdateRequest %q", klog.KObj(pod))
 	ctr.SendFullSyncChan()
 }

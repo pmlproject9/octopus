@@ -1,8 +1,8 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nginx-deployment
-  namespace:  mnp-test
+  name: nginx-deployment2
+  namespace:  mnp-test2
 spec:
   selector:
     matchLabels:
@@ -12,7 +12,6 @@ spec:
     metadata:
       labels:
         app: nginx
-        project: test
     spec:
       containers:
         - name: nginx

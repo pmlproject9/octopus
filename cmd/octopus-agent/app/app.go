@@ -2,9 +2,12 @@ package app
 
 import (
 	"context"
+	octopusv1alpha1 "github.com/pmlproject9/octopus/pkg/apis/octopus.io/v1alpha1"
 	"github.com/pmlproject9/octopus/pkg/controllermanager"
+	"github.com/pmlproject9/octopus/pkg/utils"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
+	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/klog/v2"
@@ -27,6 +30,11 @@ func NewOctopusAgent(ctx context.Context) *cobra.Command {
 			var cfg *rest.Config
 			var err error
 
+			err = octopusv1alpha1.AddToScheme(scheme.Scheme)
+			if err != nil {
+				klog.Fatalf("Error adding octopus v1alpha1 to the scheme:%v", err)
+			}
+
 			if opts.masterURL != "" || opts.kubeconfig != " " {
 				cfg, err = clientcmd.BuildConfigFromFlags(opts.masterURL, opts.kubeconfig)
 				if err != nil {
@@ -38,10 +46,20 @@ func NewOctopusAgent(ctx context.Context) *cobra.Command {
 					klog.Fatalf("unable to initialize inclusterconfig: %+v", err)
 				}
 			}
+			var brokerCfg *rest.Config
+
+			if opts.brokerKubeconfig != "" || opts.brokerMasterUrl != "" {
+				brokerCfg, err = clientcmd.BuildConfigFromFlags(opts.brokerMasterUrl, opts.brokerKubeconfig)
+				if err != nil {
+					klog.Fatalf("Error build kubeconfig: %+v", err)
+				}
+			} else {
+				brokerCfg = utils.GenerateConfigFromEnvironment()
+			}
 
 			cmCtx, cancel := context.WithCancel(ctx)
 			defer cancel()
-			cm, err := controllermanager.NewControllerManager(cmCtx, cfg, opts.IPTablesSyncPeriod, opts.clusterID)
+			cm, err := controllermanager.NewControllerManager(cmCtx, cfg, brokerCfg, opts.IPTablesSyncPeriod, opts.clusterID)
 			if err != nil {
 				klog.Fatalf("Error run controller manager: %+v", err)
 			}

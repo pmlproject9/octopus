@@ -44,6 +44,25 @@ func (e *Executor) Destroy(name string) error {
 	return err
 }
 
+func (e *Executor) DestroyIfExist(name string) error {
+	ipsets, err := e.ListIPSets()
+	if err != nil {
+		return err
+	}
+	existed := false
+	for _, ipset := range ipsets {
+		if ipset == name {
+			existed = true
+		}
+	}
+	if existed {
+		if err := e.Destroy(name); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func (e *Executor) Add(name string, entry string, timeout int) error {
 	args := []string{"add", name, entry, "-exist"}
 	_, err := e.run(args, fmt.Sprintf("error add entry into ipset:%s", name))

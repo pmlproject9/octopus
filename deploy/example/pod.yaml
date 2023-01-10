@@ -4,7 +4,7 @@ metadata:
   labels:
     project: test
   name: tmp-shell
-  namespace: mnp-test
+  namespace: mnp-test-test-48
 spec:
   containers:
     - args:

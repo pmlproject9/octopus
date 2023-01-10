@@ -25,11 +25,3 @@ type MultiNetworkPolicyListerExpansion interface{}
 // MultiNetworkPolicyNamespaceListerExpansion allows custom methods to be added to
 // MultiNetworkPolicyNamespaceLister.
 type MultiNetworkPolicyNamespaceListerExpansion interface{}
-
-// ServiceSyncListerExpansion allows custom methods to be added to
-// ServiceSyncLister.
-type ServiceSyncListerExpansion interface{}
-
-// ServiceSyncNamespaceListerExpansion allows custom methods to be added to
-// ServiceSyncNamespaceLister.
-type ServiceSyncNamespaceListerExpansion interface{}
