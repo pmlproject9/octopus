@@ -55,8 +55,6 @@ func (f *sharedInformerFactory) ForResource(resource schema.GroupVersionResource
 	// Group=octopus.io, Version=v1alpha1
 	case v1alpha1.SchemeGroupVersion.WithResource("multinetworkpolicies"):
 		return &genericInformer{resource: resource.GroupResource(), informer: f.Octopus().V1alpha1().MultiNetworkPolicies().Informer()}, nil
-	case v1alpha1.SchemeGroupVersion.WithResource("servicesyncs"):
-		return &genericInformer{resource: resource.GroupResource(), informer: f.Octopus().V1alpha1().ServiceSyncs().Informer()}, nil
 
 	}
 

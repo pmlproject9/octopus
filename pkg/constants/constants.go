@@ -1,9 +1,10 @@
 package constants
 
 const (
-	LabelSourceName      = "octopus.io/sourceName"
-	LabelSourceNamespace = "octopus.io/sourceNamespace"
-	LabelSourceClusterID = "octopus.io/sourceClusterID"
+	LabelSourceName      = "lighthouse.submariner.io/sourceName"
+	LabelSourceNamespace = "lighthouse.submariner.io/sourceNamespace"
+	LabelSourceClusterID = "lighthouse.submariner.io/sourceCluster"
+	SubmarinerOperator   = "submariner-operator"
 )
 
 const (

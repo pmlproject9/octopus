@@ -31,8 +31,6 @@ func addKnownTypes(scheme *runtime.Scheme) error {
 	scheme.AddKnownTypes(SchemeGroupVersion,
 		&MultiNetworkPolicy{},
 		&MultiNetworkPolicyList{},
-		&ServiceSync{},
-		&ServiceSyncList{},
 	)
 	metav1.AddToGroupVersion(scheme, SchemeGroupVersion)
 	return nil

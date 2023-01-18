@@ -26,8 +26,6 @@ import (
 type Interface interface {
 	// MultiNetworkPolicies returns a MultiNetworkPolicyInformer.
 	MultiNetworkPolicies() MultiNetworkPolicyInformer
-	// ServiceSyncs returns a ServiceSyncInformer.
-	ServiceSyncs() ServiceSyncInformer
 }
 
 type version struct {
@@ -44,9 +42,4 @@ func New(f internalinterfaces.SharedInformerFactory, namespace string, tweakList
 // MultiNetworkPolicies returns a MultiNetworkPolicyInformer.
 func (v *version) MultiNetworkPolicies() MultiNetworkPolicyInformer {
 	return &multiNetworkPolicyInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
-}
-
-// ServiceSyncs returns a ServiceSyncInformer.
-func (v *version) ServiceSyncs() ServiceSyncInformer {
-	return &serviceSyncInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }

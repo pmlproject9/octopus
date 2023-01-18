@@ -27,7 +27,6 @@ import (
 type OctopusV1alpha1Interface interface {
 	RESTClient() rest.Interface
 	MultiNetworkPoliciesGetter
-	ServiceSyncsGetter
 }
 
 // OctopusV1alpha1Client is used to interact with features provided by the octopus.io group.
@@ -37,10 +36,6 @@ type OctopusV1alpha1Client struct {
 
 func (c *OctopusV1alpha1Client) MultiNetworkPolicies(namespace string) MultiNetworkPolicyInterface {
 	return newMultiNetworkPolicies(c, namespace)
-}
-
-func (c *OctopusV1alpha1Client) ServiceSyncs(namespace string) ServiceSyncInterface {
-	return newServiceSyncs(c, namespace)
 }
 
 // NewForConfig creates a new OctopusV1alpha1Client for the given config.

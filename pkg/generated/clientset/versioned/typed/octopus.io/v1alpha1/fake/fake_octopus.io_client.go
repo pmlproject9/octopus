@@ -32,10 +32,6 @@ func (c *FakeOctopusV1alpha1) MultiNetworkPolicies(namespace string) v1alpha1.Mu
 	return &FakeMultiNetworkPolicies{c, namespace}
 }
 
-func (c *FakeOctopusV1alpha1) ServiceSyncs(namespace string) v1alpha1.ServiceSyncInterface {
-	return &FakeServiceSyncs{c, namespace}
-}
-
 // RESTClient returns a RESTClient that is used to communicate
 // with API server by this client implementation.
 func (c *FakeOctopusV1alpha1) RESTClient() rest.Interface {

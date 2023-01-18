@@ -16,6 +16,7 @@ RUN id=gobuild,target=/gocache \
     go build -v -o /agent ./cmd/octopus-agent/main.go
 
 FROM alpine:3.13.4
+RUN apk add ipset && apk add iptables && apk add ip6tables
 WORKDIR /
 COPY --from=builder /agent .
 ENTRYPOINT ["/agent"]

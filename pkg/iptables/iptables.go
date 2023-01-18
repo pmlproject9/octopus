@@ -53,6 +53,7 @@ func (e *Executor) InsertUnique(table string, chain string, pos int, ruleSpec []
 		klog.Errorf("error to list table %s chain %s", table, chain)
 		return errors.Wrap(err, "error to list chain rule")
 	}
+
 	existCounts := 0
 	posTrue := false
 	ruleSpecString := strings.Join(ruleSpec, " ")
@@ -60,9 +61,9 @@ func (e *Executor) InsertUnique(table string, chain string, pos int, ruleSpec []
 		ruleSubs := strings.Split(rule, "\"")
 		if strings.Contains(strings.Join(ruleSubs, ""), ruleSpecString) {
 			existCounts++
-		}
-		if index == pos {
-			posTrue = true
+			if index == pos {
+				posTrue = true
+			}
 		}
 	}
 	if posTrue && existCounts == 1 {

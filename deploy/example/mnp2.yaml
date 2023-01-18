@@ -1,7 +1,7 @@
 apiVersion: octopus.io/v1alpha1
 kind: MultiNetworkPolicy
 metadata:
-  name: test-network-policy
+  name: test-network-policy2
   namespace: mnp-test
 spec:
   podSelector:
@@ -9,13 +9,16 @@ spec:
       project: test
   filter:
     allow:
+      - namespaceSelector:
+          matchLabels:
+            project: test
       - serviceSelector:
           matchLabels:
             project: test
     ports:
       - protocol: TCP
         port: 80
-        endPort: 90
+        endPort: 81
       - protocol: TCP
         port: 90
         endPort: 100

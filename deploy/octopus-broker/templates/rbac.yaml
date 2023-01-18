@@ -1,0 +1,36 @@
+{{- if .Values.rbac.create -}}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: octopus-broker-cluster
+  labels:
+    heritage: {{ .Release.Service | quote }}
+    release: {{ .Release.Name | quote }}
+    chart: {{ template "octopus-broker.chart" . }}
+rules:
+  - apiGroups: [""]
+    resources: ["namespaces","pods"]
+    verbs: ["*"]
+  - apiGroups: ["multicluster.x-k8s.io"]
+    resources: ["serviceimports"]
+    verbs: ["*"]
+  - apiGroups: [ "submariner.io" ]
+    resources: ["endpoints"]
+    verbs: ["*"]
+  - apiGroups: ["octopus.io"]
+    resources: ["multinetworkpolicies"]
+    verbs: ["*"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: octopus-broker-cluster
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: octopus-broker-cluster
+subjects:
+  - kind: ServiceAccount
+    name: octopus-broker-client
+    namespace: octopus
+{{- end -}}
